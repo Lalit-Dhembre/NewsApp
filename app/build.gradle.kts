@@ -47,7 +47,8 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
     ksp("android.arch.lifecycle:compiler:1.1.1")
     implementation(libs.logging.interceptor)
     implementation ("androidx.navigation:navigation-fragment-ktx:2.7.7")
@@ -64,4 +65,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    // Coroutine Lifecycle Scopes
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
 }

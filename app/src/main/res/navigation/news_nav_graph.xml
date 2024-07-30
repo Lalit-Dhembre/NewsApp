@@ -38,8 +38,7 @@
             android:name="article"
             app:argType="com.example.newsprojectpractice.models.Article" />
         <argument
-            android:name="article"
-            app:nullable="false"
+            android:name="article1"
             app:argType="com.example.movieratingsapp.Model.Article"/>
     </fragment>
 </navigation>
