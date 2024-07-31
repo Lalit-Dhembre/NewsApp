@@ -23,12 +23,10 @@ class NewsAdapter:RecyclerView.Adapter<NewsAdapter.NewsVH>() {
     }
     private val differCallback = object : DiffUtil.ItemCallback<Article>(){
         override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
-            TODO("Not yet implemented")
             return oldItem.url == newItem.url
         }
 
         override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
-            TODO("Not yet implemented")
             return oldItem == newItem
         }
 
@@ -37,14 +35,12 @@ class NewsAdapter:RecyclerView.Adapter<NewsAdapter.NewsVH>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsVH {
-        TODO("Not yet implemented")
         return NewsVH(
             LayoutInflater.from(parent.context).inflate(R.layout.item_news,parent,false)
         )
     }
 
     override fun getItemCount(): Int {
-        TODO("Not yet implemented")
         return differ.currentList.size
     }
     private var onClick: ((Article) -> Unit)? = null

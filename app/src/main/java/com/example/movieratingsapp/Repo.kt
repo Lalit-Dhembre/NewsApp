@@ -2,14 +2,15 @@ package com.example.movieratingsapp
 
 import com.example.movieratingsapp.API.Retrofit_Instance
 import com.example.movieratingsapp.Model.Article
-import com.example.movieratingsapp.Model.Response
+import com.example.movieratingsapp.Model.Response1
 
-class Repo(val db: Database) {
-    suspend fun getHeadlines(countryCode: String, pageno: Int): retrofit2.Response<Response> {
+class Repo(val db: AppDatabase) {
+    private val articleDao: Dao = db.getArticlesDao()
+    suspend fun getHeadlines(countryCode: String, pageno: Int): retrofit2.Response<Response1> {
         return Retrofit_Instance.api.getHeadlines(countryCode, pageno)
     }
 
-    suspend fun searchNews(searchQuery: String, pageno: Int): retrofit2.Response<Response> {
+    suspend fun searchNews(searchQuery: String, pageno: Int): retrofit2.Response<Response1> {
         return Retrofit_Instance.api.getSearch(searchQuery, pageno)
     }
 

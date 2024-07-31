@@ -9,7 +9,7 @@ import retrofit2.http.Query
 interface Newsapi {
     @GET("v2/top-headlines")
     suspend fun getHeadlines(
-        @Query("country") countryCode: String = "in",
+        @Query("country") countryCode: String = "us",
         @Query("page") pageNo: Int = 1,
         @Query("apiKey") apiKey: String = API_KEY
     ): retrofit2.Response<com.example.movieratingsapp.Model.Response1>

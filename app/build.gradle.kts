@@ -28,35 +28,49 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures{
+
+    buildFeatures {
         dataBinding = true
     }
 }
 
 dependencies {
-
+    // Retrofit
     implementation(libs.retrofit)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
-    ksp("android.arch.lifecycle:compiler:1.1.1")
-    implementation(libs.logging.interceptor)
-    implementation ("androidx.navigation:navigation-fragment-ktx:2.7.7")
-    implementation ("androidx.navigation:navigation-ui-ktx:2.7.7")
-    implementation ("com.github.bumptech.glide:glide:4.12.0")
-    ksp ("com.github.bumptech.glide:compiler:4.12.0")
-    implementation ("androidx.room:room-runtime:2.5.1")
-    ksp ("androidx.room:room-compiler:2.5.1")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // Lifecycle
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
+    ksp("androidx.lifecycle:lifecycle-compiler:2.8.4") // Adjusted to correct lifecycle compiler dependency
+
+    // Glide
+    implementation("com.github.bumptech.glide:glide:4.12.0")
+    ksp("com.github.bumptech.glide:compiler:4.12.0")
+
+    // Room
+    implementation("androidx.room:room-runtime:2.5.1")
+    ksp("androidx.room:room-compiler:2.5.1")
+    implementation("androidx.room:room-ktx:2.5.1")
+
+    // Navigation
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+
+    // UI and Testing
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -65,9 +79,4 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    // Coroutine Lifecycle Scopes
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
 }

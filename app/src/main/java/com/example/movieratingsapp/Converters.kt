@@ -1,16 +1,19 @@
 package com.example.movieratingsapp
 
-import androidx.room.TypeConverters
+import androidx.room.TypeConverter
 import com.example.movieratingsapp.Model.Source
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 class Converters {
-    @TypeConverters
-    fun fromSource(source: Source): String{
-        return source.name
+    @TypeConverter
+    fun fromSource(source: Source?): String? {
+        return Gson().toJson(source)
     }
 
-    @TypeConverters
-    fun toSource(name: String): Source{
-        return Source(name,name)
+    @TypeConverter
+    fun toSource(sourceString: String?): Source? {
+        val type = object : TypeToken<Source>() {}.type
+        return Gson().fromJson(sourceString, type)
     }
 }

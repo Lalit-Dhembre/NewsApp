@@ -10,7 +10,6 @@
         <action
             android:id="@+id/action_headlinesFragment_to_articleFragment"
             app:destination="@id/articleFragment"/>
-
     </fragment>
     <fragment
         android:id="@+id/favouritesFragment"
@@ -19,7 +18,6 @@
         <action
             android:id="@+id/action_favouritesFragment_to_articleFragment"
             app:destination="@id/articleFragment"/>
-
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -28,15 +26,14 @@
         <action
             android:id="@+id/action_searchFragment_to_articleFragment"
             app:destination="@id/articleFragment"/>
-
     </fragment>
     <fragment
         android:id="@+id/articleFragment"
         android:name="com.example.movieratingsapp.Fragments.Article"
-        android:label="ArticleFragment" >
+        android:label="ArticleFragment">
         <argument
             android:name="article"
-            app:argType="com.example.newsprojectpractice.models.Article" />
+            app:argType="com.example.movieratingsapp.Model.Article" />
         <argument
             android:name="article1"
             app:argType="com.example.movieratingsapp.Model.Article"/>

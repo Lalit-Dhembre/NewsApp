@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,7 +15,11 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-class NewsVM(app: Application, val newsRepo: Repo) : AndroidViewModel(app) {
+class NewsVM(
+    app: Application,
+    private val newsRepo: Repo
+) : AndroidViewModel(app) {
+
     val headlines: MutableLiveData<Resource<Response1>> = MutableLiveData()
     var headlinesPage = 1
     var headlinesResponse: Response1? = null
@@ -25,49 +30,75 @@ class NewsVM(app: Application, val newsRepo: Repo) : AndroidViewModel(app) {
     var oldSearchQuery: String? = null
 
     init {
-        getHeadlines("ind")
+        getHeadlines("us")
     }
+
     fun getHeadlines(countryCode: String) = viewModelScope.launch {
-        headlines(countryCode)
+        headlines.postValue(Resource.Loading())
+        try {
+            if (internetConnection(getApplication())) {
+                val response = newsRepo.getHeadlines(countryCode, headlinesPage)
+                headlines.postValue(handleHeadlinesResponse(response))
+            } else {
+                headlines.postValue(Resource.Error("NO INTERNET"))
+            }
+        } catch (e: Throwable) {
+            when (e) {
+                is IOException -> headlines.postValue(Resource.Error("UNABLE TO CONNECT"))
+                else -> headlines.postValue(Resource.Error("No signal"))
+            }
+        }
     }
+
     fun searchNews(searchQuery: String) = viewModelScope.launch {
-        searchNewsInternet(searchQuery)
+        search.postValue(Resource.Loading())
+        try {
+            if (internetConnection(getApplication())) {
+                val response = newsRepo.searchNews(searchQuery, searchNewsPage)
+                search.postValue(handleSearchNewsResponse(response))
+            } else {
+                search.postValue(Resource.Error("No internet"))
+            }
+        } catch (e: Throwable) {
+            when (e) {
+                is IOException -> search.postValue(Resource.Error("Unable to Connect"))
+                else -> search.postValue(Resource.Error("No internet"))
+            }
+        }
     }
 
     private fun handleHeadlinesResponse(response: retrofit2.Response<Response1>): Resource<Response1> {
-        if (response.isSuccessful) {
-            response.body()?.let { resultres ->
+        Log.d("NewsVM", "Response Code: ${response.code()}")
+        Log.d("NewsVM", "Response Body: ${response.body()}")
+        return if (response.isSuccessful) {
+            response.body()?.let { result ->
                 headlinesPage++
-                if (headlinesResponse == null) {
-                    headlinesResponse = resultres
-                } else {
-                    val oldArticle = headlinesResponse?.articles
-                    val newsArticle = resultres.articles
-                    oldArticle?.addAll(newsArticle)
-                }
-                return Resource.Success(headlinesResponse ?: resultres)
-            }
+                headlinesResponse = headlinesResponse?.apply {
+                    articles.addAll(result.articles)
+                } ?: result
+                Resource.Success(headlinesResponse ?: result)
+            } ?: Resource.Error("Empty response body")
+        } else {
+            Resource.Error(response.message())
         }
-        return Resource.Error(response.message())
     }
 
     private fun handleSearchNewsResponse(response: retrofit2.Response<Response1>): Resource<Response1> {
-        if (response.isSuccessful) {
-            response.body()?.let { resultres ->
+        return if (response.isSuccessful) {
+            response.body()?.let { result ->
                 if (searchResponse == null || newSearchQuery != oldSearchQuery) {
                     searchNewsPage = 1
                     oldSearchQuery = newSearchQuery
-                    searchResponse = resultres
+                    searchResponse = result
                 } else {
                     searchNewsPage++
-                    val oldArticles = searchResponse?.articles
-                    val newArticle = resultres.articles
-                    oldArticles?.addAll(newArticle)
+                    searchResponse?.articles?.addAll(result.articles)
                 }
-                return Resource.Success(headlinesResponse ?: resultres)
-            }
+                Resource.Success(searchResponse ?: result)
+            } ?: Resource.Error("Empty response body")
+        } else {
+            Resource.Error(response.message())
         }
-        return Resource.Error(response.message())
     }
 
     fun addToFavourites(article: Article) = viewModelScope.launch {
@@ -80,62 +111,28 @@ class NewsVM(app: Application, val newsRepo: Repo) : AndroidViewModel(app) {
         newsRepo.delete(article)
     }
 
-    fun internetConnection(context: Context): Boolean {
-        (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).apply {
-            return getNetworkCapabilities(activeNetwork)?.run {
-                when {
-                    hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                    hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                    hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-                    else -> false
-                }
-            } ?: false
-        }
-    }
-
-    private suspend fun headlines(countryCode: String) {
-        headlines.postValue(Resource.Loading())
-        try {
-            if (internetConnection(this.getApplication())) {
-                val response1 = newsRepo.getHeadlines(countryCode, headlinesPage)
-                headlines.postValue(handleHeadlinesResponse(response1))
-            } else {
-                headlines.postValue(Resource.Error("NO INTERNET"))
-            }
-        } catch (t: Throwable) {
-            when (t) {
-                is IOException -> headlines.postValue(Resource.Error("UNABLE TO CONNECT"))
-                else -> headlines.postValue(Resource.Error("No signal"))
-            }
-        }
-    }
-    private suspend fun searchNewsInternet(searchQuery: String){
-        newSearchQuery = searchQuery
-        search.postValue(Resource.Loading())
-        try{
-            if(internetConnection(this.getApplication())){
-                val response = newsRepo.searchNews(searchQuery,searchNewsPage)
-                search.postValue(handleSearchNewsResponse(response))
-            }
-            else{
-                search.postValue(Resource.Error("No internet"))
-            }
-        } catch (t:Throwable){
-            when(t){
-                is IOException -> search.postValue(Resource.Error("Unable to Connect"))
-                else-> search.postValue(Resource.Error("No internet"))
-            }
-        }
-    }
-
-    fun fetchHeadlines(countryCode: String) = viewModelScope.launch {
-        headlines(countryCode)
+    private fun internetConnection(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        return networkCapabilities?.run {
+            hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                    hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                    hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+        } ?: false
     }
 }
 
 
-class NewsVMPF(val app: Application, val newsRepo: Repo): ViewModelProvider.Factory{
+class NewsVMPF(
+    private val app: Application,
+    private val newsRepo: Repo
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return super.create(modelClass) as T
+        if (modelClass.isAssignableFrom(NewsVM::class.java)) {
+            return NewsVM(app, newsRepo) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
