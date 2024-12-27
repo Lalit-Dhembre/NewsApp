@@ -1,5 +1,6 @@
 package com.cosmicstruck.newsapp.onboarding.presentation
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,13 +14,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.cosmicstruck.newsapp.onboarding.domain.pages
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.cosmicstruck.newsapp.navigation.Screens
+import com.cosmicstruck.newsapp.onboarding.domain.model.pages
 import com.cosmicstruck.newsapp.onboarding.presentation.components.BackButton
 import com.cosmicstruck.newsapp.onboarding.presentation.components.NextButton
 import com.cosmicstruck.newsapp.onboarding.presentation.components.OnBoardingItem
@@ -28,7 +34,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun OnBoardingScreen(
-
+    viewModel: OnBoardingViewModel = hiltViewModel<OnBoardingViewModel>(),
+    navController: NavController
 ) {
     Column(
         modifier = Modifier
@@ -79,11 +86,11 @@ fun OnBoardingScreen(
             ) {
                 val scope = rememberCoroutineScope()
 
-                if(buttonState.value[0].isNotEmpty()){
+                if (buttonState.value[0].isNotEmpty()) {
                     BackButton(
                         text = buttonState.value[0],
                         onClick = {
-                            scope.launch{
+                            scope.launch {
                                 pagerState.animateScrollToPage(
                                     page = pagerState.currentPage - 1
                                 )
@@ -94,11 +101,11 @@ fun OnBoardingScreen(
                 NextButton(
                     text = buttonState.value[1],
                     onClick = {
-                        scope.launch{
-                            if(pagerState.currentPage == 3){
-
-                            }
-                            else{
+                        scope.launch {
+                            if (pagerState.currentPage == 2) {
+                                viewModel.saveAppEntryTrue()
+                                navController.navigate(route = Screens.BrowseNewsScreen.route)
+                            } else {
                                 pagerState.animateScrollToPage(
                                     page = pagerState.currentPage + 1
                                 )

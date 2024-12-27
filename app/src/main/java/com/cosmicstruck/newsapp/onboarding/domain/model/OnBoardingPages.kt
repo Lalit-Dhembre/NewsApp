@@ -1,4 +1,4 @@
-package com.cosmicstruck.newsapp.onboarding.domain
+package com.cosmicstruck.newsapp.onboarding.domain.model
 
 import androidx.annotation.DrawableRes
 import com.cosmicstruck.newsapp.R
