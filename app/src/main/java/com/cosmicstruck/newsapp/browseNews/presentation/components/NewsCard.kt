@@ -99,14 +99,6 @@ fun NewsCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ){
-                    if (data.author != null){
-                        Text(
-                            text = data.author.toString(),
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = if (!isSystemInDarkTheme()) Color.Black.copy(alpha = 0.4f) else Color.White.copy(alpha = 0.4f)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
                     Icon(
                         painter = painterResource(R.drawable.ic_time),
                         contentDescription = null,

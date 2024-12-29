@@ -3,9 +3,14 @@ package com.cosmicstruck.newsapp.bookmark
 import android.R.attr.onClick
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,12 +24,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.cosmicstruck.newsapp.R
 import com.cosmicstruck.newsapp.bookmark.data.local.entity.toData
 import com.cosmicstruck.newsapp.browseNews.data.remote.dto.news.Data
 import com.cosmicstruck.newsapp.browseNews.presentation.components.NewsCard
@@ -34,7 +42,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.onEach
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun BookmarkScreen(
     navigateToDetails: (Data) -> Unit,
@@ -45,19 +52,46 @@ fun BookmarkScreen(
 
     Log.d("CHECKING STATE OF BOOK MARKS",state.articles.toString())
     Scaffold(
-        bottomBar = { BottomAppBarHome(navController = navController) }
-    ) {
+        bottomBar = { BottomAppBarHome(navController = navController) },
+        topBar = {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .height(50.dp)
+                .background(
+                    color = Color(0xFFE52323)
+                )){
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.anchor_logo),
+                        contentDescription = null
+                    )
+                    Text(
+                        text = "Anchor News",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+            }
+        }
+    ) {it->
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .statusBarsPadding()
+            .padding(it)
             .padding(top = 8.dp, start = 8.dp, end = 8.dp)
     ) {
 
         Text(
             text = "Bookmark",
             style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold),
-            color = Color.Black
+            color = if(isSystemInDarkTheme()) Color.White else Color.Black
         )
 
         Spacer(modifier = Modifier.height(8.dp))

@@ -48,7 +48,7 @@ fun BottomAppBarHome(
 
     NavigationBar(
         modifier = Modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = Color(0xFFE52323),
         tonalElevation = 10.dp
     ) {
         val navBackStackEntry = navController.currentBackStackEntryAsState()
@@ -77,7 +77,8 @@ fun BottomAppBarHome(
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = item.title,
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White
                         )
                     }
                 },

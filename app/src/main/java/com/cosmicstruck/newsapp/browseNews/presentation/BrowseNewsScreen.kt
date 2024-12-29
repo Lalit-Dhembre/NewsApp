@@ -2,10 +2,13 @@ package com.cosmicstruck.newsapp.browseNews.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,9 +23,12 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,7 +45,6 @@ import com.cosmicstruck.newsapp.navigation.Screens
 import com.cosmicstruck.newsapp.newsDetail.NewsDetailWebView
 import com.cosmicstruck.newsapp.utils.ArticleList
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun BrowseNewsScreen(
     articles : LazyPagingItems<Data>,
@@ -60,11 +65,38 @@ fun BrowseNewsScreen(
     }
     Scaffold(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .statusBarsPadding(),
+        topBar = {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .background(
+                    color = Color(0xFFE52323)
+                )){
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.anchor_logo),
+                        contentDescription = null
+                    )
+                    Text(
+                        text = "Anchor News",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+            }
+        },
         bottomBar = { BottomAppBarHome(
             navController = navController
         ) }
-    ) {
+    ) {it->
         val titles = remember {
             derivedStateOf {
                 if(articles.itemCount > 10){
@@ -79,27 +111,9 @@ fun BrowseNewsScreen(
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(top = 8.dp)
+            .padding(it)
             .statusBarsPadding()){
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = null,
-                modifier = Modifier
-                    .width(150.dp)
-                    .height(30.dp)
-                    .padding(horizontal = 8.dp)
-            )
-            Spacer(Modifier.height(10.dp))
-            SearchBar(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .fillMaxWidth(),
-                text = "",
-                readOnly = true,
-                onClick = {
-                },
-                onValueChange = {},
-                onSearch = {},
-            )
+
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = titles.value,
